@@ -31,8 +31,16 @@ print(get_random_secret_key())
 python manage.py runserver
 ````
 
+##### Prompt endpoint
+
 ```bash
 curl -X POST -d '{"prompt": "hello"}' http://localhost:8000/api/v1/call_model/
+```
+
+##### Health Endpoint
+
+```bash
+curl -X GET http://localhost:8000/api/v1/health/
 ```
 
 #### References
