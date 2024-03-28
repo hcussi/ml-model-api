@@ -32,7 +32,7 @@ python manage.py runserver
 ````
 
 ```bash
-curl http://localhost:8000/api/v1/chatgpt/hello
+curl -X POST -d '{"prompt": "hello"}' http://localhost:8000/api/v1/call_model/
 ```
 
 #### References
