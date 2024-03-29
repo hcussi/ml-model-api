@@ -1,0 +1,80 @@
+openapi: 3.0.3
+info:
+  title: Model API
+  version: 1.0.0
+  description: Generative AI model API
+paths:
+  /api/v1/call_model/:
+    post:
+      operationId: call_model
+      description: Call the ChatGPT model and return the text response
+      parameters:
+      - in: query
+        name: payload
+        schema:
+          $ref: '#/components/schemas/prompt-payload'
+        description: Prompt text
+        examples:
+          ExampleOfCallModelRequest.:
+            value:
+              prompt: hello
+            summary: Example of call_model request.
+      tags:
+      - call_model
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/prompt-response'
+              examples:
+                ExampleOfCallModelResponse.:
+                  value:
+                    response: 'dummy response from prompt: hello'
+                  summary: Example of call_model response.
+          description: Created. New resource in response
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+  /api/v1/health/:
+    get:
+      operationId: health
+      description: Call the health endpoint
+      tags:
+      - health
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No Content
+components:
+  schemas:
+    prompt-payload:
+      type: object
+      properties:
+        prompt:
+          type: string
+      required:
+      - prompt
+    prompt-response:
+      type: object
+      properties:
+        response:
+          type: string
+      required:
+      - response
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

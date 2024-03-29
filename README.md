@@ -43,6 +43,13 @@ curl -X POST -d '{"prompt": "hello"}' http://localhost:8000/api/v1/call_model/
 curl -X GET http://localhost:8000/api/v1/health/
 ```
 
+##### API docs
+
+Navigate to:
+- [Swagger YAML](http://localhost:8000/api/v1/schema/)
+- [Swagger UI](http://localhost:8000/api/v1/schema/swagger-ui/)
+- [Redoc UI](http://localhost:8000/api/v1/schema/redoc/)
+
 ##### Running tests
 
 ```bash

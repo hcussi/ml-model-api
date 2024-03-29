@@ -1,5 +1,6 @@
 from rest_framework import status
 from rest_framework.test import APIClient
+from rest_framework.response import Response
 
 
 def test_call_model(api_client: APIClient) -> None:
@@ -8,7 +9,7 @@ def test_call_model(api_client: APIClient) -> None:
     :param api_client: APiClient
     :return: None
     """
-    response = api_client.post(
+    response: Response = api_client.post(
         '/api/v1/call_model/',
         data = { 'prompt': 'hello' },
         format = 'json',
@@ -24,7 +25,7 @@ def test_call_model_without_params(api_client: APIClient) -> None:
     :param api_client: APiClient
     :return: None
     """
-    response = api_client.post(
+    response: Response = api_client.post(
         '/api/v1/call_model/',
         format = 'json',
     )
@@ -37,7 +38,7 @@ def test_call_model_without_wrong_params(api_client: APIClient) -> None:
     :param api_client: APiClient
     :return: None
     """
-    response = api_client.post(
+    response: Response = api_client.post(
         '/api/v1/call_model/',
         data = { 'foo': 'hello' },
         format = 'json',
@@ -47,9 +48,19 @@ def test_call_model_without_wrong_params(api_client: APIClient) -> None:
 
 def test_health(api_client: APIClient) -> None:
     """
-        Test success health API endpoint
-        :param api_client: APiClient
-        :return: None
-        """
-    response = api_client.get('/api/v1/health/')
+    Test success health API endpoint
+    :param api_client: APiClient
+    :return: None
+    """
+    response: Response = api_client.get('/api/v1/health/')
     assert response.status_code == status.HTTP_204_NO_CONTENT
+
+
+def test_unexisting_endpoint(api_client: APIClient) -> None:
+    """
+    Test unexisting API endpoint
+    :param api_client: APiClient
+    :return: None
+    """
+    response: Response = api_client.get('/api/v1/foo/')
+    assert response.status_code == status.HTTP_404_NOT_FOUND
