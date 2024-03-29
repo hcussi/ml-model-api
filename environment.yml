@@ -21,6 +21,14 @@ dependencies:
       - asgiref==3.8.1
       - django==5.0.3
       - djangorestframework==3.15.1
+      - iniconfig==2.0.0
+      - packaging==24.0
+      - pluggy==1.4.0
+      - pytest==8.1.1
+      - pytest-django==4.8.0
+      - pytest-progress==1.2.5
+      - pytest-sugar==1.0.0
       - python-dotenv==1.0.1
       - sqlparse==0.4.4
+      - termcolor==2.4.0
 prefix: /Users/hernan/miniconda3/envs/ml-model-api

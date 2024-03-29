@@ -43,6 +43,12 @@ curl -X POST -d '{"prompt": "hello"}' http://localhost:8000/api/v1/call_model/
 curl -X GET http://localhost:8000/api/v1/health/
 ```
 
+##### Running tests
+
+```bash
+pytest
+```
+
 #### References
 
 - [Why miniconda?](https://docs.anaconda.com/free/distro-or-miniconda/)
