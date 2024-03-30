@@ -94,6 +94,7 @@ def test_async_call_model(api_client_auth: APIClient, mock_mljob: None, mock_mlp
     Test success async_call_model API endpoint
     :param api_client_auth: APiClient
     :param mock_mljob: Create mock mljob
+    :param mock_mlprompt_producer: Create mock producer
     :return: None
     """
     response: Response = api_client_auth.post(

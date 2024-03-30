@@ -33,8 +33,8 @@ def api_client_auth(created_user: User) -> APIClient:
     Fixture to provide an API client with basic auth
     :return: APIClient
     """
-    client = APIClient()
-    credentials = ('%s:%s' % ('test', 'secret1234'))
+    client: APIClient = APIClient()
+    credentials: str = ('%s:%s' % ('test', 'secret1234'))
     base64_credentials = base64.b64encode(credentials.encode(HTTP_HEADER_ENCODING)).decode(HTTP_HEADER_ENCODING)
     client.credentials(HTTP_AUTHORIZATION = 'Basic %s' % base64_credentials)
     yield client
@@ -50,7 +50,7 @@ def api_client() -> APIClient:
 
 
 @pytest.fixture(scope = 'function')
-def mock_mljob(mocker):
+def mock_mljob(mocker) -> None:
     mock = MlJob(id=123, prompt='hello', status=MlJobStatus.PENDING)
     mocker.patch('chatgpt.models.MlJob.objects.create', return_value=mock)
 
@@ -62,7 +62,7 @@ def mljob_pending(django_db_setup, django_db_blocker, created_user: User) -> MlJ
     :return:
     """
     with django_db_blocker.unblock():
-        job = MlJob.objects.create(
+        job: MlJob = MlJob.objects.create(
             user = created_user,
             prompt = 'hello',
             start_time = timezone.now(),
@@ -77,14 +77,14 @@ def mljob_done(django_db_setup, django_db_blocker, created_user: User) -> MlJob:
     :return:
     """
     with django_db_blocker.unblock():
-        model = MlModel.objects.create(
+        model: MlModel = MlModel.objects.create(
             user = created_user,
             prompt = 'hello',
             response = 'dummy response from prompt: hello',
             duration = timezone.now() - timezone.now(),
         )
 
-        job = MlJob.objects.create(
+        job: MlJob = MlJob.objects.create(
             user = created_user,
             mlmodel = model,
             prompt = 'hello',
@@ -95,5 +95,5 @@ def mljob_done(django_db_setup, django_db_blocker, created_user: User) -> MlJob:
 
 
 @pytest.fixture(scope = 'function')
-def mock_mlprompt_producer(mocker):
+def mock_mlprompt_producer(mocker) -> None:
     mocker.patch('chatgpt.producers.ProducerMlPromptCreated.publish')

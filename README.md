@@ -68,6 +68,12 @@ Create a topic: `mlmodel.prompt_created` with replication factor of 2 and number
 python manage.py runserver
 ````
 
+#### Running Kafka Consumer
+
+````bash
+ python manage.py prompt_created_listener
+ ```` 
+
 ##### API docs
 
 Navigate to:

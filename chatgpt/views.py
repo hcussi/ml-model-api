@@ -7,6 +7,7 @@ from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import BasicAuthentication
 from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema
 
 from chatgpt.ml_model import super_chat_gpt_like_model
@@ -34,7 +35,7 @@ class ModelView(AuthenticateView):
         :param request: Request
         :return: the response
         """
-        start_time: datetime = datetime.now()
+        start_time: datetime = timezone.now()
 
         data = JSONParser().parse(request)
 
@@ -44,7 +45,7 @@ class ModelView(AuthenticateView):
         prompt: Text = data['prompt']
         res = super_chat_gpt_like_model(data['prompt'])
 
-        end_time: datetime = datetime.now()
+        end_time: datetime = timezone.now()
 
         duration: timedelta = (end_time - start_time)
 
@@ -86,7 +87,7 @@ class AsyncModelView(AuthenticateView):
         :param request: Request
         :return: the response with the job id
         """
-        start_time: datetime = datetime.now()
+        start_time: datetime = timezone.now()
 
         data = JSONParser().parse(request)
 
