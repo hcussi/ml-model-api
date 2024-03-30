@@ -5,17 +5,16 @@ import pytest
 
 
 @pytest.mark.django_db
-def test_call_model(api_client: APIClient, auth_header: str, created_user: None) -> None:
+def test_call_model(api_client_auth: APIClient) -> None:
     """
     Test success call_model API endpoint
     :param api_client: APiClient
     :return: None
     """
-    response: Response = api_client.post(
+    response: Response = api_client_auth.post(
         '/api/v1/call_model/',
         data = { 'prompt': 'hello' },
         format = 'json',
-        HTTP_AUTHORIZATION=auth_header,
     )
     assert response.status_code == status.HTTP_201_CREATED
     assert response.content_type == 'application/json'
@@ -37,32 +36,30 @@ def test_call_model_without_auth(api_client: APIClient) -> None:
 
 
 @pytest.mark.django_db
-def test_call_model_without_params(api_client: APIClient, auth_header: str, created_user: None) -> None:
+def test_call_model_without_params(api_client_auth: APIClient) -> None:
     """
     Test the update task API
     :param api_client: APiClient
     :return: None
     """
-    response: Response = api_client.post(
+    response: Response = api_client_auth.post(
         '/api/v1/call_model/',
         format = 'json',
-        HTTP_AUTHORIZATION = auth_header,
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 @pytest.mark.django_db
-def test_call_model_without_wrong_params(api_client: APIClient, auth_header: str, created_user: None) -> None:
+def test_call_model_without_wrong_params(api_client_auth: APIClient) -> None:
     """
     Test the update task API
     :param api_client: APiClient
     :return: None
     """
-    response: Response = api_client.post(
+    response: Response = api_client_auth.post(
         '/api/v1/call_model/',
         data = { 'foo': 'hello' },
         format = 'json',
-        HTTP_AUTHORIZATION = auth_header,
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 

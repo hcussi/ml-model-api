@@ -5,15 +5,6 @@ from django.contrib.auth.models import User
 import base64
 
 
-@pytest.fixture(scope = 'function')
-def api_client() -> APIClient:
-    """
-    Fixture to provide an API client
-    :return: APIClient
-    """
-    yield APIClient()
-
-
 @pytest.fixture(scope = 'session')
 def created_user(django_db_setup, django_db_blocker) -> None:
     """
@@ -25,11 +16,22 @@ def created_user(django_db_setup, django_db_blocker) -> None:
 
 
 @pytest.fixture(scope = 'session')
-def auth_header():
+def api_client_auth(created_user) -> APIClient:
     """
-    Fixture to create the basic auth header for the test user
-    :return: the basic auth header value
+    Fixture to provide an API client with basic auth
+    :return: APIClient
     """
+    client = APIClient()
     credentials = ('%s:%s' % ('test', 'secret1234'))
     base64_credentials = base64.b64encode(credentials.encode(HTTP_HEADER_ENCODING)).decode(HTTP_HEADER_ENCODING)
-    return 'Basic %s' % base64_credentials
+    client.credentials(HTTP_AUTHORIZATION = 'Basic %s' % base64_credentials)
+    yield client
+
+
+@pytest.fixture(scope = 'session')
+def api_client() -> APIClient:
+    """
+    Fixture to provide an API client
+    :return: APIClient
+    """
+    yield APIClient()
