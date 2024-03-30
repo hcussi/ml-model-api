@@ -3,14 +3,15 @@ from datetime import datetime, timedelta
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.parsers import JSONParser
-from rest_framework import status, generics, serializers
+from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import BasicAuthentication
 from django.views.decorators.csrf import csrf_exempt
-from drf_spectacular.utils import OpenApiResponse, OpenApiParameter, extend_schema, OpenApiExample, inline_serializer
+from drf_spectacular.utils import extend_schema
 
 from chatgpt.ml_model import super_chat_gpt_like_model
 from chatgpt.models import MlModel, MlJob
+from chatgpt.openapi import CALL_MODEL, ASYNC_CALL_MODEL, ASYNC_CALL_STATUS
 
 
 class AuthenticateView(generics.GenericAPIView):
@@ -22,44 +23,7 @@ class AuthenticateView(generics.GenericAPIView):
 class ModelView(AuthenticateView):
 
     @csrf_exempt
-    @extend_schema(
-        operation_id = 'call_model',
-        description = 'Call the ChatGPT model and return the text response',
-        parameters = [
-            OpenApiParameter(
-                name = 'payload',
-                description = 'Prompt text',
-                type = inline_serializer(name = 'prompt-payload', fields = { 'prompt': serializers.CharField() }),
-                examples = [
-                    OpenApiExample(
-                        'Example of call_model request.',
-                        value = { 'prompt': 'hello' },
-                        request_only = True,
-                        response_only = False,
-                    ),
-                ],
-            ),
-        ],
-        responses = {
-            201: OpenApiResponse(
-                response = inline_serializer(
-                    name = 'prompt-response',
-                    fields = { 'response': serializers.CharField() },
-                ),
-                description = 'Created. New resource in response'
-                ),
-            400: OpenApiResponse(description = 'Bad request'),
-            401: OpenApiResponse(description = 'Unauthorized'),
-        },
-        examples = [
-            OpenApiExample(
-                'Example of call_model response.',
-                value = { 'response': 'dummy response from prompt: hello' },
-                request_only = False,
-                response_only = True,
-            ),
-        ],
-    )
+    @extend_schema(**CALL_MODEL)
     def post(self, request: Request) -> Response:
         """
         Call the ChatGPT model and build the response
@@ -97,10 +61,7 @@ class ModelView(AuthenticateView):
 class HealthView(generics.GenericAPIView):
 
     @csrf_exempt
-    @extend_schema(
-        operation_id = 'health',
-        description = 'Call the health endpoint',
-    )
+    @extend_schema(operation_id = 'health', description = 'Call the health endpoint')
     def get(self, _) -> Response:
 
         """
@@ -114,44 +75,7 @@ class HealthView(generics.GenericAPIView):
 class AsyncModelView(AuthenticateView):
 
     @csrf_exempt
-    @extend_schema(
-        operation_id = 'async_call_model',
-        description = 'Async call the ChatGPT model and return the job id',
-        parameters = [
-            OpenApiParameter(
-                name = 'payload',
-                description = 'Prompt text',
-                type = inline_serializer(name = 'async-prompt-payload', fields = { 'prompt': serializers.CharField() }),
-                examples = [
-                    OpenApiExample(
-                        'Example of async_call_model request.',
-                        value = { 'prompt': 'hello' },
-                        request_only = True,
-                        response_only = False,
-                    ),
-                ],
-            ),
-        ],
-        responses = {
-            201: OpenApiResponse(
-                response = inline_serializer(
-                    name = 'async-prompt-response',
-                    fields = { 'job_id': serializers.IntegerField() },
-                ),
-                description = 'Created. Job now is schedule to run soon'
-                ),
-            400: OpenApiResponse(description = 'Bad request'),
-            401: OpenApiResponse(description = 'Unauthorized'),
-        },
-        examples = [
-            OpenApiExample(
-                'Example of async_call_model response.',
-                value = { 'job_id': 123 },
-                request_only = False,
-                response_only = True,
-            ),
-        ],
-    )
+    @extend_schema(**ASYNC_CALL_MODEL)
     def post(self, request: Request) -> Response:
         """
         Call the ChatGPT model async and build the response
@@ -187,35 +111,7 @@ class AsyncModelView(AuthenticateView):
 class AsyncModelStatusView(AuthenticateView):
 
     @csrf_exempt
-    @extend_schema(
-        operation_id = 'async_call_status',
-        description = 'Return the job status and response if there is any',
-        responses = {
-            200: OpenApiResponse(
-                response = inline_serializer(
-                    name = 'status-response',
-                    fields = { 'job_status': serializers.CharField(), 'response': serializers.CharField() },
-                ),
-                description = 'The job status and the response if there is any'
-                ),
-            400: OpenApiResponse(description = 'Bad request'),
-            401: OpenApiResponse(description = 'Unauthorized'),
-        },
-        examples = [
-            OpenApiExample(
-                'Example of async_call_status pending job.',
-                value = { 'job_status': 'pending', 'response': None },
-                request_only = False,
-                response_only = True,
-            ),
-            OpenApiExample(
-                'Example of async_call_status done job.',
-                        value = { 'job_status': 'done', 'response': 'dummy response from prompt: hello' },
-                request_only = False,
-                response_only = True,
-            ),
-        ],
-    )
+    @extend_schema(**ASYNC_CALL_STATUS)
     def get(self, request, job_id: int) -> Response:
         """
         Returns the job status and the response if there is any
