@@ -92,3 +92,8 @@ def mljob_done(django_db_setup, django_db_blocker, created_user: User) -> MlJob:
             start_time = timezone.now(),
         )
         return job
+
+
+@pytest.fixture(scope = 'function')
+def mock_mlprompt_producer(mocker):
+    mocker.patch('chatgpt.producers.ProducerMlPromptCreated.publish')

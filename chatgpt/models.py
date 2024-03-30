@@ -1,5 +1,5 @@
 from django.db import models
-
+from json import JSONEncoder
 
 class MlModel(models.Model):
     user = models.ForeignKey('auth.User', related_name = 'mlmodels', on_delete = models.CASCADE)
@@ -37,3 +37,7 @@ class MlJob(models.Model):
 
     class Meta:
         ordering = ['created_on']
+
+    class MlJobEncoder(JSONEncoder):
+        def default(self, o):
+            return { 'job_id': o.id }

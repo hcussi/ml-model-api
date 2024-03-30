@@ -89,7 +89,7 @@ def test_unexisting_endpoint(api_client: APIClient) -> None:
 
 
 @pytest.mark.django_db
-def test_async_call_model(api_client_auth: APIClient, mock_mljob) -> None:
+def test_async_call_model(api_client_auth: APIClient, mock_mljob: None, mock_mlprompt_producer: None) -> None:
     """
     Test success async_call_model API endpoint
     :param api_client_auth: APiClient

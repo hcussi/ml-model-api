@@ -12,6 +12,10 @@ from drf_spectacular.utils import extend_schema
 from chatgpt.ml_model import super_chat_gpt_like_model
 from chatgpt.models import MlModel, MlJob
 from chatgpt.openapi import CALL_MODEL, ASYNC_CALL_MODEL, ASYNC_CALL_STATUS
+from chatgpt.producers import ProducerMlPromptCreated
+
+
+producerMlPromptCreated = ProducerMlPromptCreated()
 
 
 class AuthenticateView(generics.GenericAPIView):
@@ -91,15 +95,13 @@ class AsyncModelView(AuthenticateView):
 
         prompt: Text = data['prompt']
 
-        # async code
-
         job = MlJob.objects.create(
             user_id=request.user.id,
             prompt=prompt,
             start_time=start_time,
         )
 
-        # end async code
+        producerMlPromptCreated.publish(job)
 
         return Response(
             { 'job_id': job.id },

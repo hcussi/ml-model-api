@@ -56,6 +56,12 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
+#### Kafka
+
+Check that Kafka brokers are up and running with [Kafdrop](http://localhost:9099/) and that there is one
+controller assigned.
+Create a topic: `mlmodel.prompt_created` with replication factor of 2 and number of partitions of 3.
+
 #### Running Django Server
 
 ````bash
