@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:5.7
+    container_name: mlmodel-mysql
+    ports:
+      - "3306:3306"
+    env_file:
+      - .env
+    environment:
+      - MYSQL_ROOT_PASSWORD=$DB_ADMIN_PASS
+      - MYSQL_DATABASE=usersdb
+    volumes:
+      - ./docker-compose/mysql:/var/lib/mysql
+    command: mysqld --default-authentication-plugin=mysql_native_password

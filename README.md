@@ -4,10 +4,14 @@ Django Rest Framework has been used in order to build a chatgpt like application
 
 ### Environment
 
-- Python 3.11
+#### Python 3.11
 
 Miniconda is used to create virtual environments. Check the `requirements.txt` file in order to build one for your one.
 You will see many dependencies that are not used in the code base but are added by default by `conda`, feel free to remove those.
+
+#### Django 4.1
+
+- More info: https://docs.djangoproject.com/en/4.2/releases/4.2/#dropped-support-for-mysql-5-7
 
 #### Setting up
 
@@ -25,19 +29,55 @@ from django.core.management.utils import get_random_secret_key
 print(get_random_secret_key())
 ```
 
+#### Starting docker compose
+
+```bash
+docker-compose -f docker-compose-mlmodel.yml up -d
+```
+
+##### MySQL
+
+Create user for the DB.
+
+```bash
+docker exec -it mlmodel-mysql bash
+mysql -u root -p
+CREATE USER 'mlModelUser'@'%' IDENTIFIED BY 's3c3rTpaZZ';
+GRANT ALL PRIVILEGES ON usersdb.* TO 'mlModelUser'@'%';
+CREATE SCHEMA testsdb;
+GRANT ALL PRIVILEGES ON testsdb.* TO 'mlModelUser'@'%';
+```
+
+#### Initializing DB and creating Django super user
+
+```bash
+python manage.py makemigrations chatgpt
+python manage.py migrate
+python manage.py createsuperuser
+```
+
 #### Running Django Server
 
 ````bash
 python manage.py runserver
 ````
 
+#### Creating Django API users
+
+Navigate to [Admin site](http://localhost:8000/admin/) and [add users](https://docs.djangoproject.com/en/dev/topics/auth/default/#id6)
+Basic Auth will be used in our API.
+
 ##### Prompt endpoint
 
+The username and password send are using Basic Auth and should be created in the Django Admin site.
+
 ```bash
-curl -X POST -d '{"prompt": "hello"}' http://localhost:8000/api/v1/call_model/
+curl -X POST -d '{"prompt": "hello"}'  -u <USER>:<PASS> http://localhost:8000/api/v1/call_model/
 ```
 
 ##### Health Endpoint
+
+Basic Auth is not required.
 
 ```bash
 curl -X GET http://localhost:8000/api/v1/health/
