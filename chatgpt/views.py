@@ -1,14 +1,22 @@
+from typing import Text
+from datetime import datetime, timedelta
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.parsers import JSONParser
 from rest_framework import status, generics, serializers
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import BasicAuthentication
 from django.views.decorators.csrf import csrf_exempt
 from drf_spectacular.utils import OpenApiResponse, OpenApiParameter, extend_schema, OpenApiExample, inline_serializer
 
 from chatgpt.ml_model import super_chat_gpt_like_model
+from chatgpt.models import MlModel
 
 
 class ModelView(generics.GenericAPIView):
+
+    authentication_classes = [BasicAuthentication]
+    permission_classes = (IsAuthenticated,)
 
     @csrf_exempt
     @extend_schema(
@@ -55,12 +63,27 @@ class ModelView(generics.GenericAPIView):
         :param request: Request
         :return: the response
         """
+        start_time: datetime = datetime.now()
+
         data = JSONParser().parse(request)
 
         if 'prompt' not in data:
             return Response(status = status.HTTP_400_BAD_REQUEST)
 
+        prompt: Text = data['prompt']
         res = super_chat_gpt_like_model(data['prompt'])
+
+        end_time: datetime = datetime.now()
+
+        duration: timedelta = (end_time - start_time)
+
+        MlModel(
+            user_id=request.user.id,
+            prompt=prompt,
+            response=res,
+            duration=duration,  # duration.total_seconds() * 10 ** 3  # ms
+        ).save()
+
         return Response(
             { 'response': res },
             status = status.HTTP_201_CREATED,
