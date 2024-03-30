@@ -4,6 +4,77 @@ info:
   version: 1.0.0
   description: Generative AI model API
 paths:
+  /api/v1/async_call_model/:
+    post:
+      operationId: async_call_model
+      description: Async call the ChatGPT model and return the job id
+      parameters:
+      - in: query
+        name: payload
+        schema:
+          $ref: '#/components/schemas/async-prompt-payload'
+        description: Prompt text
+        examples:
+          ExampleOfAsyncCallModelRequest.:
+            value:
+              prompt: hello
+            summary: Example of async_call_model request.
+      tags:
+      - async_call_model
+      security:
+      - basicAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/async-prompt-response'
+              examples:
+                ExampleOfAsyncCallModelResponse.:
+                  value:
+                    job_id: 123
+                  summary: Example of async_call_model response.
+          description: Created. Job now is schedule to run soon
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+  /api/v1/async_call_status/{job_id}:
+    get:
+      operationId: async_call_status
+      description: Return the job status and response if there is any
+      parameters:
+      - in: path
+        name: job_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - async_call_status
+      security:
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/status-response'
+              examples:
+                ExampleOfAsyncCallStatusPendingJob.:
+                  value:
+                    job_status: pending
+                    response: null
+                  summary: Example of async_call_status pending job.
+                ExampleOfAsyncCallStatusDoneJob.:
+                  value:
+                    job_status: done
+                    response: 'dummy response from prompt: hello'
+                  summary: Example of async_call_status done job.
+          description: The job status and the response if there is any
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
   /api/v1/call_model/:
     post:
       operationId: call_model
@@ -22,9 +93,7 @@ paths:
       tags:
       - call_model
       security:
-      - cookieAuth: []
       - basicAuth: []
-      - {}
       responses:
         '201':
           content:
@@ -53,9 +122,23 @@ paths:
       - {}
       responses:
         '204':
-          description: No Content
+          description: No content
 components:
   schemas:
+    async-prompt-payload:
+      type: object
+      properties:
+        prompt:
+          type: string
+      required:
+      - prompt
+    async-prompt-response:
+      type: object
+      properties:
+        job_id:
+          type: integer
+      required:
+      - job_id
     prompt-payload:
       type: object
       properties:
@@ -69,6 +152,16 @@ components:
         response:
           type: string
       required:
+      - response
+    status-response:
+      type: object
+      properties:
+        job_status:
+          type: string
+        response:
+          type: string
+      required:
+      - job_status
       - response
   securitySchemes:
     basicAuth:

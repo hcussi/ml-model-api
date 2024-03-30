@@ -13,10 +13,13 @@ from chatgpt.ml_model import super_chat_gpt_like_model
 from chatgpt.models import MlModel, MlJob
 
 
-class ModelView(generics.GenericAPIView):
+class AuthenticateView(generics.GenericAPIView):
 
     authentication_classes = [BasicAuthentication]
     permission_classes = (IsAuthenticated,)
+
+
+class ModelView(AuthenticateView):
 
     @csrf_exempt
     @extend_schema(
@@ -108,10 +111,7 @@ class HealthView(generics.GenericAPIView):
         return Response(status = status.HTTP_204_NO_CONTENT)
 
 
-class AsyncModelView(generics.GenericAPIView):
-
-    authentication_classes = [BasicAuthentication]
-    permission_classes = (IsAuthenticated,)
+class AsyncModelView(AuthenticateView):
 
     @csrf_exempt
     @extend_schema(
@@ -121,7 +121,7 @@ class AsyncModelView(generics.GenericAPIView):
             OpenApiParameter(
                 name = 'payload',
                 description = 'Prompt text',
-                type = inline_serializer(name = 'prompt-payload', fields = { 'prompt': serializers.CharField() }),
+                type = inline_serializer(name = 'async-prompt-payload', fields = { 'prompt': serializers.CharField() }),
                 examples = [
                     OpenApiExample(
                         'Example of async_call_model request.',
@@ -135,7 +135,7 @@ class AsyncModelView(generics.GenericAPIView):
         responses = {
             201: OpenApiResponse(
                 response = inline_serializer(
-                    name = 'prompt-response',
+                    name = 'async-prompt-response',
                     fields = { 'job_id': serializers.IntegerField() },
                 ),
                 description = 'Created. Job now is schedule to run soon'
@@ -179,6 +179,64 @@ class AsyncModelView(generics.GenericAPIView):
 
         return Response(
             { 'job_id': job.id },
+            status = status.HTTP_200_OK,
+            content_type = 'application/json',
+        )
+
+
+class AsyncModelStatusView(AuthenticateView):
+
+    @csrf_exempt
+    @extend_schema(
+        operation_id = 'async_call_status',
+        description = 'Return the job status and response if there is any',
+        responses = {
+            200: OpenApiResponse(
+                response = inline_serializer(
+                    name = 'status-response',
+                    fields = { 'job_status': serializers.CharField(), 'response': serializers.CharField() },
+                ),
+                description = 'The job status and the response if there is any'
+                ),
+            400: OpenApiResponse(description = 'Bad request'),
+            401: OpenApiResponse(description = 'Unauthorized'),
+        },
+        examples = [
+            OpenApiExample(
+                'Example of async_call_status pending job.',
+                value = { 'job_status': 'pending', 'response': None },
+                request_only = False,
+                response_only = True,
+            ),
+            OpenApiExample(
+                'Example of async_call_status done job.',
+                        value = { 'job_status': 'done', 'response': 'dummy response from prompt: hello' },
+                request_only = False,
+                response_only = True,
+            ),
+        ],
+    )
+    def get(self, request, job_id: int) -> Response:
+        """
+        Returns the job status and the response if there is any
+        :param request: Request
+        :param job_id: The job id
+        :return: the response with the job status
+        """
+
+        try:
+            job = MlJob.objects.get(pk=job_id)
+            mlmodel = getattr(job, 'mlmodel')
+        except MlJob.DoesNotExist:
+            return Response(status = status.HTTP_400_BAD_REQUEST)
+
+        if job.user.id != request.user.id:
+            return Response(
+                status = status.HTTP_403_FORBIDDEN,
+            )
+
+        return Response(
+            { 'job_status': job.status, 'response': getattr(mlmodel, 'response', None) },
             status = status.HTTP_200_OK,
             content_type = 'application/json',
         )

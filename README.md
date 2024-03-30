@@ -80,7 +80,7 @@ pytest
 Navigate to [Admin site](http://localhost:8000/admin/) and [add users](https://docs.djangoproject.com/en/dev/topics/auth/default/#id6)
 Basic Auth will be used in our API.
 
-##### Prompt endpoint
+##### Prompt endpoints
 
 The username and password send are using Basic Auth and should be created in the Django Admin site.
 
@@ -90,6 +90,10 @@ curl -X POST -d '{"prompt": "hello"}'  -u <USER>:<PASS> http://localhost:8000/ap
 
 ```bash
 curl -X POST -d '{"prompt": "hello"}'  -u <USER>:<PASS> http://localhost:8000/api/v1/sync_call_model/
+```
+
+```bash
+curl -X GET -u <USER>:<PASS> http://localhost:8000/api/v1/sync_call_status/<job_id>
 ```
 
 ##### Health Endpoint

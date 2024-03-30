@@ -19,6 +19,13 @@ class MlJobStatus(models.TextChoices):
 
 class MlJob(models.Model):
     user = models.ForeignKey('auth.User', related_name = 'mljobs', on_delete = models.CASCADE)
+    mlmodel = models.ForeignKey(
+        'chatgpt.MlModel',
+        related_name = 'mljob',
+        on_delete = models.CASCADE,
+        blank = True,
+        null = True,
+    )
     created_on = models.DateTimeField(auto_now_add = True)
     start_time = models.DateTimeField()
     prompt = models.TextField()
