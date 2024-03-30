@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from drf_spectacular.utils import OpenApiResponse, OpenApiParameter, extend_schema, OpenApiExample, inline_serializer
 
 from chatgpt.ml_model import super_chat_gpt_like_model
-from chatgpt.models import MlModel
+from chatgpt.models import MlModel, MlJob
 
 
 class ModelView(generics.GenericAPIView):
@@ -106,3 +106,79 @@ class HealthView(generics.GenericAPIView):
         :return: the response
         """
         return Response(status = status.HTTP_204_NO_CONTENT)
+
+
+class AsyncModelView(generics.GenericAPIView):
+
+    authentication_classes = [BasicAuthentication]
+    permission_classes = (IsAuthenticated,)
+
+    @csrf_exempt
+    @extend_schema(
+        operation_id = 'async_call_model',
+        description = 'Async call the ChatGPT model and return the job id',
+        parameters = [
+            OpenApiParameter(
+                name = 'payload',
+                description = 'Prompt text',
+                type = inline_serializer(name = 'prompt-payload', fields = { 'prompt': serializers.CharField() }),
+                examples = [
+                    OpenApiExample(
+                        'Example of async_call_model request.',
+                        value = { 'prompt': 'hello' },
+                        request_only = True,
+                        response_only = False,
+                    ),
+                ],
+            ),
+        ],
+        responses = {
+            201: OpenApiResponse(
+                response = inline_serializer(
+                    name = 'prompt-response',
+                    fields = { 'job_id': serializers.IntegerField() },
+                ),
+                description = 'Created. Job now is schedule to run soon'
+                ),
+            400: OpenApiResponse(description = 'Bad request'),
+            401: OpenApiResponse(description = 'Unauthorized'),
+        },
+        examples = [
+            OpenApiExample(
+                'Example of async_call_model response.',
+                value = { 'job_id': 123 },
+                request_only = False,
+                response_only = True,
+            ),
+        ],
+    )
+    def post(self, request: Request) -> Response:
+        """
+        Call the ChatGPT model async and build the response
+        :param request: Request
+        :return: the response with the job id
+        """
+        start_time: datetime = datetime.now()
+
+        data = JSONParser().parse(request)
+
+        if 'prompt' not in data:
+            return Response(status = status.HTTP_400_BAD_REQUEST)
+
+        prompt: Text = data['prompt']
+
+        # async code
+
+        job = MlJob.objects.create(
+            user_id=request.user.id,
+            prompt=prompt,
+            start_time=start_time,
+        )
+
+        # end async code
+
+        return Response(
+            { 'job_id': job.id },
+            status = status.HTTP_200_OK,
+            content_type = 'application/json',
+        )

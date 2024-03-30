@@ -62,6 +62,19 @@ python manage.py createsuperuser
 python manage.py runserver
 ````
 
+##### API docs
+
+Navigate to:
+- [Swagger YAML](http://localhost:8000/api/v1/schema/)
+- [Swagger UI](http://localhost:8000/api/v1/schema/swagger-ui/)
+- [Redoc UI](http://localhost:8000/api/v1/schema/redoc/)
+
+##### Running tests
+
+```bash
+pytest
+```
+
 #### Creating Django API users
 
 Navigate to [Admin site](http://localhost:8000/admin/) and [add users](https://docs.djangoproject.com/en/dev/topics/auth/default/#id6)
@@ -75,25 +88,16 @@ The username and password send are using Basic Auth and should be created in the
 curl -X POST -d '{"prompt": "hello"}'  -u <USER>:<PASS> http://localhost:8000/api/v1/call_model/
 ```
 
+```bash
+curl -X POST -d '{"prompt": "hello"}'  -u <USER>:<PASS> http://localhost:8000/api/v1/sync_call_model/
+```
+
 ##### Health Endpoint
 
 Basic Auth is not required.
 
 ```bash
 curl -X GET http://localhost:8000/api/v1/health/
-```
-
-##### API docs
-
-Navigate to:
-- [Swagger YAML](http://localhost:8000/api/v1/schema/)
-- [Swagger UI](http://localhost:8000/api/v1/schema/swagger-ui/)
-- [Redoc UI](http://localhost:8000/api/v1/schema/redoc/)
-
-##### Running tests
-
-```bash
-pytest
 ```
 
 #### References

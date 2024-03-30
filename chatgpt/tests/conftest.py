@@ -3,6 +3,7 @@ from rest_framework.test import APIClient
 from rest_framework import HTTP_HEADER_ENCODING
 from django.contrib.auth.models import User
 import base64
+from chatgpt.models import MlJob, MlJobStatus
 
 
 @pytest.fixture(scope = 'session')
@@ -35,3 +36,9 @@ def api_client() -> APIClient:
     :return: APIClient
     """
     yield APIClient()
+
+
+@pytest.fixture(scope = 'function')
+def mock_mljob(mocker):
+    mock = MlJob(id=123, prompt='hello', status=MlJobStatus.PENDING)
+    mocker.patch('chatgpt.models.MlJob.objects.create', return_value=mock)

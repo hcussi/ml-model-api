@@ -33,6 +33,7 @@ dependencies:
       - pluggy==1.4.0
       - pytest==8.1.1
       - pytest-django==4.8.0
+      - pytest-mock==3.14.0
       - pytest-progress==1.2.5
       - pytest-sugar==1.0.0
       - python-dotenv==1.0.1
