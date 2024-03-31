@@ -15,6 +15,8 @@ You will see many dependencies that are not used in the code base but are added 
 
 ### Setting up
 
+Note: Only required if you want to contribute to the project. 
+
 Create and activate an environment with `conda` using `environment.yml`. Can be created from the `requirements.txt` using `pip` to install dependencies.
 Copy and rename `.env.example` file to `.env`.
 
@@ -29,7 +31,9 @@ print(get_random_secret_key())
 
 Copy the generated secret into `.env` to `PRIVATE_SECRET_KEY`.
 
-#### Starting docker compose
+### Starting the project
+
+#### Docker compose
 
 ```bash
 docker-compose -f docker-compose-mlmodel.yml up -d
@@ -37,8 +41,8 @@ docker-compose -f docker-compose-mlmodel.yml up -d
 
 #### MySQL
 
-User and DB are created with `db/init.sql`. You can connect to the mysql instance using `localhost:3306`, check
-for tables `auth_*` and `chatgpt_*`.
+App user and DB are created with `db/init.sql`. You can connect to the mysql instance using `localhost:3306`, check
+for tables `auth_*` and `chatgpt_*` after the `mlmodel-django` container has started.
 
 #### Running tests
 
@@ -54,6 +58,8 @@ pytest
 ```
 
 #### Creating Django super user
+
+Note: This is required in order to create app/api users.
 
 From inside docker:
 
@@ -79,7 +85,6 @@ Navigate to:
 - [Swagger YAML](http://localhost:8088/api/v1/schema/)
 - [Swagger UI](http://localhost:8088/api/v1/schema/swagger-ui/)
 - [Redoc UI](http://localhost:8088/api/v1/schema/redoc/)
-
 
 ### Ml Model endpoints
 
@@ -110,7 +115,7 @@ curl -X GET http://localhost:8088/api/v1/health/
 #### Kafka
 
 Check that Kafka brokers are up and running with [Kafdrop](http://localhost:9099/) and that there is one
-controller assigned and topic `mlmodel.prompt_created`.
+controller assigned and topic `mlmodel.prompt_created` is present after calling `async_call_model` endpoint.
 
 #### References
 
