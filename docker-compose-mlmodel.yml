@@ -10,9 +10,9 @@ services:
       - .env
     environment:
       - MYSQL_ROOT_PASSWORD=$DB_ADMIN_PASS
-      - MYSQL_DATABASE=usersdb
     volumes:
       - ./docker-compose/mysql:/var/lib/mysql
+      - ./db:/docker-entrypoint-initdb.d/:ro
     command: mysqld --default-authentication-plugin=mysql_native_password
 
   kafka1:
@@ -91,12 +91,40 @@ services:
 
   kafdrop:
     image: obsidiandynamics/kafdrop:4.0.1
-    container_name: mlmodel-kafka-kafdrop
+    container_name: mlmodel-kafdrop
     ports:
       - "9099:9000"
     environment:
       KAFKA_BROKERCONNECT: "mlmodel-kafka1:19092,mlmodel-kafka2:19093,mlmodel-kafka3:19094"
     depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mlmodel-django
+    command: sh -c "python3 manage.py migrate --noinput && python3 manage.py runserver 0.0.0.0:8088"
+    restart: always
+    ports:
+      - "8088:8088"
+    depends_on:
+      - db
+      - kafka1
+      - kafka2
+      - kafka3
+
+  consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mlmodel-consumer
+    command: sh -c "python3 manage.py prompt_created_listener"
+    restart: always
+    depends_on:
+      - db
       - kafka1
       - kafka2
       - kafka3

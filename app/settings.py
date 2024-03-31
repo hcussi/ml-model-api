@@ -84,10 +84,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'usersdb',
-        'HOST': '127.0.0.1',
+        'HOST': os.environ.get('DB_HOST'),
         'PORT': 3306,
         'USER': 'mlModelUser',
-        'PASSWORD': 's3c3rTpaZZ',
+        'PASSWORD': os.environ.get('DB_USER_PASS'),
         'TEST': {
             'NAME': 'testsdb',
         },

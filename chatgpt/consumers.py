@@ -11,8 +11,7 @@ from confluent_kafka import Consumer, KafkaError, KafkaException, Message
 from chatgpt.models import MlJob, MlModel, MlJobStatus
 from chatgpt.ml_model import super_chat_gpt_like_model
 
-KAFKA_HOST = os.environ.get('KAFKA_HOST')
-KAFKA_PORT = os.environ.get('KAFKA_PORT')
+KAFKA_BOOTSTRAP_SERVERS = os.environ.get('KAFKA_BOOTSTRAP_SERVERS')
 
 # We want to run thread in an infinite loop
 running: bool = True
@@ -23,7 +22,7 @@ class MlListener(threading.Thread):
         threading.Thread.__init__(self)
         # Create consumer
         self.consumer = Consumer({
-            'bootstrap.servers': f'{KAFKA_HOST}:{KAFKA_PORT}',
+            'bootstrap.servers': f'{KAFKA_BOOTSTRAP_SERVERS}',
             'auto.offset.reset': 'earliest',
             'group.id': 'mlprompt_created_group'
         })

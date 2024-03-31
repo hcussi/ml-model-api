@@ -5,13 +5,12 @@ import socket
 
 from chatgpt.models import MlJob
 
-KAFKA_HOST = os.environ.get('KAFKA_HOST')
-KAFKA_PORT = os.environ.get('KAFKA_PORT')
+KAFKA_BOOTSTRAP_SERVERS = os.environ.get('KAFKA_BOOTSTRAP_SERVERS')
 
 
 class ProducerMl:
     def __init__(self) -> None:
-        conf = {'bootstrap.servers': f'{KAFKA_HOST}:{KAFKA_PORT}', 'client.id': socket.gethostname()}
+        conf = {'bootstrap.servers': f'{KAFKA_BOOTSTRAP_SERVERS}', 'client.id': socket.gethostname()}
         self.producer = Producer(conf)
 
 
