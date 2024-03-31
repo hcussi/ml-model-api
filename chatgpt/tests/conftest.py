@@ -97,3 +97,30 @@ def mljob_done(django_db_setup, django_db_blocker, created_user: User) -> MlJob:
 @pytest.fixture(scope = 'function')
 def mock_mlprompt_producer(mocker) -> None:
     mocker.patch('chatgpt.producers.ProducerMlPromptCreated.publish')
+
+
+@pytest.fixture(scope = 'function')
+def multiple_mlmodels(django_db_setup, django_db_blocker, created_user: User) -> None:
+    """
+    Fixture to create multiple ml models
+    :return:
+    """
+    with django_db_blocker.unblock():
+        model: MlModel = MlModel.objects.create(
+            user = created_user,
+            prompt = 'hello',
+            response = 'dummy response from prompt: hello',
+            duration = timezone.now() - timezone.now(),
+        )
+        model: MlModel = MlModel.objects.create(
+            user = created_user,
+            prompt = 'hi',
+            response = 'dummy response from prompt: hi',
+            duration = timezone.now() - timezone.now(),
+        )
+        model: MlModel = MlModel.objects.create(
+            user = created_user,
+            prompt = 'by',
+            response = 'dummy response from prompt: by',
+            duration = timezone.now() - timezone.now(),
+        )

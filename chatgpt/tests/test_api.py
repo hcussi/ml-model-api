@@ -8,6 +8,7 @@ import base64
 
 from chatgpt.models import MlJobStatus, MlJob
 
+
 @pytest.mark.django_db
 def test_call_model(api_client_auth: APIClient) -> None:
     """
@@ -188,3 +189,35 @@ def test_async_call_status_without_auth(api_client: APIClient, mljob_pending: Ml
     """
     response: Response = api_client.get(f'/api/v1/async_call_status/{mljob_pending.id}')
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+@pytest.mark.django_db
+def test_call_model_rate_limit(api_client_auth: APIClient, multiple_mlmodels: None) -> None:
+    """
+    Test fail call_model API endpoint for rate limit
+    :param api_client_auth: APiClient
+    :param multiple_mlmodels: Create multiple ml models
+    :return: None
+    """
+    response: Response = api_client_auth.post(
+        '/api/v1/call_model/',
+        data = { 'prompt': 'hello' },
+        format = 'json',
+    )
+    assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
+
+
+@pytest.mark.django_db
+def test_async_call_model_rate_limit(api_client_auth: APIClient, multiple_mlmodels: None) -> None:
+    """
+    Test fail async_call_model API endpoint for rate limit
+    :param api_client_auth: APiClient
+    :param multiple_mlmodels: Create multiple ml models
+    :return: None
+    """
+    response: Response = api_client_auth.post(
+        '/api/v1/async_call_model/',
+        data = { 'prompt': 'hello' },
+        format = 'json',
+    )
+    assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS

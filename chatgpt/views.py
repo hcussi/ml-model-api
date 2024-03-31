@@ -14,9 +14,10 @@ from chatgpt.ml_model import super_chat_gpt_like_model
 from chatgpt.models import MlModel, MlJob
 from chatgpt.openapi import CALL_MODEL, ASYNC_CALL_MODEL, ASYNC_CALL_STATUS
 from chatgpt.producers import ProducerMlPromptCreated
-
+from chatgpt.decorators import rate_limited
 
 producerMlPromptCreated = ProducerMlPromptCreated()
+ML_MODEL_RATE_LIMIT = 3
 
 
 class AuthenticateView(generics.GenericAPIView):
@@ -29,6 +30,7 @@ class ModelView(AuthenticateView):
 
     @csrf_exempt
     @extend_schema(**CALL_MODEL)
+    @rate_limited(rate_limit = ML_MODEL_RATE_LIMIT)
     def post(self, request: Request) -> Response:
         """
         Call the ChatGPT model and build the response
@@ -81,6 +83,7 @@ class AsyncModelView(AuthenticateView):
 
     @csrf_exempt
     @extend_schema(**ASYNC_CALL_MODEL)
+    @rate_limited(rate_limit = ML_MODEL_RATE_LIMIT)
     def post(self, request: Request) -> Response:
         """
         Call the ChatGPT model async and build the response
