@@ -97,11 +97,11 @@ curl -X POST -d '{"prompt": "hello"}'  -u <USER>:<PASS> http://localhost:8088/ap
 ```
 
 ```bash
-curl -X POST -d '{"prompt": "hello"}'  -u <USER>:<PASS> http://localhost:8088/api/v1/sync_call_model/
+curl -X POST -d '{"prompt": "hello"}'  -u <USER>:<PASS> http://localhost:8088/api/v1/async_call_model/
 ```
 
 ```bash
-curl -X GET -u <USER>:<PASS> http://localhost:8088/api/v1/sync_call_status/<job_id>
+curl -X GET -u <USER>:<PASS> http://localhost:8088/api/v1/async_call_status/<job_id>
 ```
 
 #### Health Endpoint
