@@ -106,10 +106,13 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: mlmodel-django
-    command: sh -c "python3 manage.py migrate --noinput && python3 manage.py runserver 0.0.0.0:8088"
+    command: sh -c "python3 manage.py migrate --noinput && python3 manage.py runserver 0.0.0.0:8888"
     restart: always
+    volumes:
+      - .:/app
+      - .env.docker-compose:/app/.env:ro
     ports:
-      - "8088:8088"
+      - "8888:8888"
     depends_on:
       - db
       - kafka1
@@ -123,6 +126,9 @@ services:
     container_name: mlmodel-consumer
     command: sh -c "python3 manage.py prompt_created_listener"
     restart: always
+    volumes:
+      - .:/app
+      - .env.docker-compose:/app/.env:ro
     depends_on:
       - db
       - kafka1

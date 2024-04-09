@@ -1,4 +1,5 @@
 .idea
 .env
+.env.docker-compose
 **/__pycache__/*
 docker-compose

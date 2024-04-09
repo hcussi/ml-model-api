@@ -18,7 +18,7 @@ You will see many dependencies that are not used in the code base but are added 
 Note: Only required if you want to contribute to the project. 
 
 Create and activate an environment with `conda` using `environment.yml`. Can be created from the `requirements.txt` using `pip` to install dependencies.
-Copy and rename `.env.example` file to `.env`.
+Copy and rename `.env.example` file to `.env` and `.env.docker-compose.example` file to `.env.docker-compose`, setup the missing variable values.
 
 #### Generating Secret Key
 
@@ -29,7 +29,7 @@ from django.core.management.utils import get_random_secret_key
 print(get_random_secret_key())
 ```
 
-Copy the generated secret into `.env` to `PRIVATE_SECRET_KEY`.
+Copy the generated secret into `.env` and `.env.docker-compose` to `PRIVATE_SECRET_KEY`.
 
 ### Starting the project
 
@@ -68,23 +68,17 @@ docker exec -it mlmodel-django bash
 python manage.py createsuperuser
 ```
 
-From `localhost`, change `DB_HOST=127.0.0.1` in `.env`:
-
-```bash
-python manage.py createsuperuser
-```
-
 #### Creating Django API users
 
-Navigate to [Admin site](http://localhost:8088/admin/) and [add users](https://docs.djangoproject.com/en/dev/topics/auth/default/#id6)
+Navigate to [Admin site](http://localhost:8888/admin/) and [add users](https://docs.djangoproject.com/en/dev/topics/auth/default/#id6)
 Basic Auth will be used in our API.
 
 ### API docs
 
 Navigate to:
-- [Swagger YAML](http://localhost:8088/api/v1/schema/)
-- [Swagger UI](http://localhost:8088/api/v1/schema/swagger-ui/)
-- [Redoc UI](http://localhost:8088/api/v1/schema/redoc/)
+- [Swagger YAML](http://localhost:8888/api/v1/schema/)
+- [Swagger UI](http://localhost:8888/api/v1/schema/swagger-ui/)
+- [Redoc UI](http://localhost:8888/api/v1/schema/redoc/)
 
 ### Ml Model endpoints
 
@@ -93,15 +87,15 @@ Navigate to:
 The username and password send are using Basic Auth and should be created in the Django Admin site.
 
 ```bash
-curl -X POST -d '{"prompt": "hello"}'  -u <USER>:<PASS> http://localhost:8088/api/v1/call_model/
+curl -X POST -d '{"prompt": "hello"}'  -u <USER>:<PASS> http://localhost:8888/api/v1/call_model/
 ```
 
 ```bash
-curl -X POST -d '{"prompt": "hello"}'  -u <USER>:<PASS> http://localhost:8088/api/v1/async_call_model/
+curl -X POST -d '{"prompt": "hello"}'  -u <USER>:<PASS> http://localhost:8888/api/v1/async_call_model/
 ```
 
 ```bash
-curl -X GET -u <USER>:<PASS> http://localhost:8088/api/v1/async_call_status/<job_id>
+curl -X GET -u <USER>:<PASS> http://localhost:8888/api/v1/async_call_status/<job_id>
 ```
 
 #### Health Endpoint
@@ -109,15 +103,23 @@ curl -X GET -u <USER>:<PASS> http://localhost:8088/api/v1/async_call_status/<job
 Basic Auth is not required.
 
 ```bash
-curl -X GET http://localhost:8088/api/v1/health/
+curl -X GET http://localhost:8888/api/v1/health/
 ```
 
-#### Kafka
+### Local development
+
+Start the server
+
+````bash
+python manage.py runserver
+````
+
+### Kafka
 
 Check that Kafka brokers are up and running with [Kafdrop](http://localhost:9099/) and that there is one
 controller assigned and topic `mlmodel.prompt_created` is present after calling `async_call_model` endpoint.
 
-#### References
+### References
 
 - [Why miniconda?](https://docs.anaconda.com/free/distro-or-miniconda/)
 - [Conda cheet sheet](https://docs.conda.io/projects/conda/en/latest/_downloads/843d9e0198f2a193a3484886fa28163c/conda-cheatsheet.pdf)
