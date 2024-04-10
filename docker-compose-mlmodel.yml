@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   db:
-    image: mysql:5.7
+    image: mysql:8
     container_name: mlmodel-mysql
     ports:
       - "3306:3306"
@@ -109,8 +109,8 @@ services:
     command: sh -c "python3 manage.py migrate --noinput && python3 manage.py runserver 0.0.0.0:8888"
     restart: always
     volumes:
-      - .:/app
-      - .env.docker-compose:/app/.env:ro
+      - ./app:/app/app
+      - ./chatgpt:/app/chatgpt
     ports:
       - "8888:8888"
     depends_on:
@@ -127,8 +127,8 @@ services:
     command: sh -c "python3 manage.py prompt_created_listener"
     restart: always
     volumes:
-      - .:/app
-      - .env.docker-compose:/app/.env:ro
+      - ./app:/app/app
+      - ./chatgpt:/app/chatgpt
     depends_on:
       - db
       - kafka1

@@ -9,10 +9,6 @@ Django Rest Framework has been used in order to build a chatgpt like application
 Miniconda is used to create virtual environments. Check the `environment.yml` file in order to build one for your one.
 You will see many dependencies that are not used in the code base but are added by default by `conda`, feel free to remove those.
 
-#### Django 4.1
-
-- More info: https://docs.djangoproject.com/en/4.2/releases/4.2/#dropped-support-for-mysql-5-7
-
 ### Setting up
 
 Note: Only required if you want to contribute to the project. 
@@ -34,6 +30,8 @@ Copy the generated secret into `.env` and `.env.docker-compose` to `PRIVATE_SECR
 ### Starting the project
 
 #### Docker compose
+
+Using MySQL 8 and Kafka 7.6.0
 
 ```bash
 docker-compose -f docker-compose-mlmodel.yml up -d

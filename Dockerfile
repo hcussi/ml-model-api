@@ -14,3 +14,4 @@ RUN pip install -r requirements.txt
 
 # Copy the project code into the container
 COPY . /app/
+ADD .env.docker-compose /app/.env
